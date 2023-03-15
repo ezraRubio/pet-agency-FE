@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = axios.create({ baseURL: "https://pet-agency-be.herokuapp.com/" });
+const API = axios.create({ baseURL: "https://pet-agency-be-production.up.railway.app/" });
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("loggedUser");
   if (token) req.headers.Authorization = `Bearer ${token}`;
