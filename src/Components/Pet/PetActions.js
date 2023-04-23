@@ -1,6 +1,6 @@
 import { CardActions, Button } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import { adoptPet, deletePet, returnPet, savePet } from "../../api/index.js";
+import { adoptPet, unSavePet, returnPet, savePet } from "../../api/index.js";
 import { UserContext } from "../Context/userContext.js";
 
 export default function PetActions({ classes, pet }) {
@@ -50,11 +50,11 @@ export default function PetActions({ classes, pet }) {
   };
 
   const handleDelete = () => {
-    deletePet(pet._id)
+    unSavePet(pet._id)
       .then((res) => {
         const saved = res.data;
         setSavedPets(saved);
-        alert(`${pet.name} was deleted`);
+        alert(`${pet.name} was remove from save pets`);
       })
       .catch((e) => console.log(e));
   };
@@ -76,31 +76,14 @@ export default function PetActions({ classes, pet }) {
         <Button size="small" color="primary" onClick={handleReturn}>
           Return Pet
         </Button>
-      ) : pet.status === "Fostered" ? (
+      ) : (
         <Button size="small" color="primary" onClick={handleAdopt}>
           Adopt
         </Button>
-      ) : pet.status === "Adopted" ? null : (
-        <>
-          <Button
-            size="small"
-            color="primary"
-            onClick={() => handleAdopt(false)}
-          >
-            Adopt
-          </Button>
-          <Button
-            size="small"
-            color="primary"
-            onClick={() => handleAdopt(true)}
-          >
-            Foster
-          </Button>
-        </>
       )}
       {isPetSaved ? (
         <Button size="small" color="primary" onClick={handleDelete}>
-          Delete
+          Remove from saved
         </Button>
       ) : (
         <Button size="small" color="primary" onClick={handleSave}>

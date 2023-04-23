@@ -1,5 +1,13 @@
 import { createContext, useEffect, useState } from "react";
-import { getPets, getPetsByUser, checkToken } from "../../api";
+import { getPets, getPetsByUser } from "../../api";
+import jwt_decode from "jwt-decode";
+
+const isTokenExpired = (decodedToken) => {
+  const currentTime = Date.now() / 1000;
+  if (decodedToken.exp < currentTime) return true
+  
+  return false 
+};
 
 export const UserContext = createContext();
 
@@ -17,21 +25,25 @@ export default function UserContextProvider(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    checkToken()
-      .then((res) => {
-        setRole(res.data.role);
-        setUid(res.data.uid);
-        setIsAuth(true);
-      })
-      .catch((e) => console.log(e.message));
+    const token = localStorage.getItem("loggedUser")
+    if(!token) return setIsAuth(false)
+    const tokenDecoded = token && jwt_decode(token)
+    if (isTokenExpired(tokenDecoded)) {
+      localStorage.clear()
+      return setIsAuth(false)
+    }
+    
+    setUid(()=>tokenDecoded.uid)
+    setRole(()=>tokenDecoded.role)
+    setIsAuth(true)
   }, []);
 
   useEffect(() => {
     uid &&
       getPetsByUser(uid)
         .then((res) => {
-          res.data.saved && setSavedPets(res.data.saved);
-          res.data.adopted && setAdoptedPets(res.data.adopted);
+          res.data.savedPets && setSavedPets(res.data.savedPets);
+          res.data.adoptedPets && setAdoptedPets(res.data.adoptedPets);
         })
         .catch((e) => console.log(e));
   }, [uid]);
@@ -47,10 +59,6 @@ export default function UserContextProvider(props) {
       .catch((e) => console.log(e))
       .finally(() => setIsLoading(false));
   }, [searchQuery, refresh]);
-
-  useEffect(() => {
-    uid ? setIsAuth(true) : setIsAuth(false);
-  }, [uid]);
 
   return (
     <UserContext.Provider
@@ -76,6 +84,7 @@ export default function UserContextProvider(props) {
         setSearchResult,
         setSelectedPet,
         setIsLoading,
+        setIsAuth,
       }}
     >
       {props.children}

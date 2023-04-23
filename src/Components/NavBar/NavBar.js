@@ -18,7 +18,7 @@ export default function NavBar() {
   const classes = useStyles();
   const [modal, setModal] = useState(false);
   const [drawer, setDrawer] = useState(false);
-  const { isAuth, setUid } = useContext(UserContext);
+  const { isAuth, setUid, setIsAuth } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleOpen = () => setModal(true);
@@ -35,6 +35,7 @@ export default function NavBar() {
 
   const logOut = () => {
     localStorage.clear();
+    setIsAuth(false)
     setUid("");
     navigate("/");
   };

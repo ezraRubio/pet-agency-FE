@@ -21,7 +21,7 @@ export default function DrawerItem({ handleOpen }) {
   const [specialMenu, setSpecialMenu] = useState([])
 
   useEffect(()=>{
-    role==="admin"
+    role==="ADMIN"
     ?setSpecialMenu(["Dashboard", "Add pet"])
     :setSpecialMenu(["Profile", "My pets"])
   }, [role])

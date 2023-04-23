@@ -15,7 +15,7 @@ import { logIn, signUp } from "../../../api";
 import { UserContext } from "../../Context/userContext";
 
 export default function AuthModal({ handleClose, open }) {
-  const { setUid, setRole, isLoading, setIsLoading } = useContext(UserContext);
+  const { setUid, setRole, isLoading, setIsLoading, setIsAuth } = useContext(UserContext);
   const [isLogIn, setIsLogIn] = useState(true);
   const [credentials, setCredentials] = useState({
     email: "",
@@ -49,6 +49,7 @@ export default function AuthModal({ handleClose, open }) {
           })
           .catch((e) => alert("wrong email or password"))
           .finally(()=>{
+            setIsAuth(true)
             setIsLoading(false)
             handleClose()
           })
@@ -64,6 +65,7 @@ export default function AuthModal({ handleClose, open }) {
           })
           .catch((e) => alert(e))
           .finally(()=>{
+            setIsAuth(true)
             setIsLoading(false)
             handleClose()
           })
