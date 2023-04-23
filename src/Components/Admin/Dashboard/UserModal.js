@@ -11,13 +11,13 @@ export default function UserModal({ open, handleClose, user }) {
   const [saved, setSaved] = useState([]);
 
   useEffect(() => {
-    getPetsByUser(user._id)
+    getPetsByUser(user.id)
       .then((res) => {
-        res && res.data.saved && setSaved(res.data.saved);
-        res.data.adopted && setAdopted(res.data.adopted);
+        res.data.savedPets && setSaved(res.data.savedPets);
+        res.data.adoptedPets && setAdopted(res.data.adoptedPets);
       })
       .catch((e) => console.log(e.message));
-  }, [user._id]);
+  }, [user.id]);
 
   return (
     <Modal open={open} onClose={handleClose}>

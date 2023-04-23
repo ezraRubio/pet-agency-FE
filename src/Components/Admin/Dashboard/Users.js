@@ -44,7 +44,7 @@ export default function Users({ handleClick }) {
             {users.map((user) => (
               <TableRow
                 hover
-                key={user._id}
+                key={user.id}
                 onClick={() => handleOpen(user)}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
