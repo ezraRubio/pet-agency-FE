@@ -35,7 +35,7 @@ export default function Profile() {
 
     editUser(uid, userData)
     .then((res) => {
-      setUid(res.data._id);
+      setUid(res.data.id);
       alert(`updated successfully, ${userData.firstName ? userData.firstName : userData.email}`);
     })
     .catch((e) => alert(e.message))
