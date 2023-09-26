@@ -3,29 +3,32 @@ import { useContext, useEffect, useState } from "react";
 import { adoptPet, unSavePet, returnPet, savePet } from "../../api/index.js";
 import { UserContext } from "../Context/userContext.js";
 
-export default function PetActions({ classes, pet }) {
+export default function PetActions({ classes }) {
   const {
     adoptedPets,
     setAdoptedPets,
     savedPets,
     setSavedPets,
     setSelectedPet,
+    selectedPet,
   } = useContext(UserContext);
   const [isPetAdopted, setIsPetAdopted] = useState(false);
+  const [isAdoptedByOtherUser, setIsAdoptedByOtherUser] = useState(false);
   const [isPetSaved, setIsPetSaved] = useState(false);
 
   useEffect(() => {
-    adoptedPets &&
-      setIsPetAdopted(adoptedPets.some((userPet) => userPet._id === pet._id));
-  }, [adoptedPets, pet._id]);
+    if (adoptedPets.some((userPet) => userPet._id === selectedPet._id))
+      setIsPetAdopted(true);
+    else if (selectedPet.status === "Adopted") setIsAdoptedByOtherUser(true);
+  }, [adoptedPets, selectedPet.status, selectedPet._id]);
 
   useEffect(() => {
     savedPets &&
-      setIsPetSaved(savedPets.some((userPet) => userPet._id === pet._id));
-  }, [savedPets, pet._id]);
+      setIsPetSaved(savedPets.some((userPet) => userPet._id === selectedPet._id));
+  }, [savedPets, selectedPet._id]);
 
   const handleSave = () => {
-    savePet(pet._id)
+    savePet(selectedPet._id)
       .then((res) => {
         const saved = res.data;
         setSavedPets(saved);
@@ -34,37 +37,31 @@ export default function PetActions({ classes, pet }) {
       .catch((e) => console.log(e));
   };
 
-  const handleAdopt = (isFostering) => {
-    adoptPet(pet._id, { isFostering }).then((res) => {
+  const handleAdopt = () => {
+    adoptPet(selectedPet._id).then((res) => {
       const adopted = res.data;
       setAdoptedPets(adopted);
-      alert(
-        `${adopted[adopted.length - 1].name} was ${
-          isFostering ? "fostered" : "adopted"
-        }`
-      );
-      isFostering
-        ? setSelectedPet((prevState) => ({ ...prevState, status: "Fostered" }))
-        : setSelectedPet((prevState) => ({ ...prevState, status: "Adopted" }));
+      alert(`${adopted[adopted.length - 1].name} was adopted`);
+      setSelectedPet((prevState) => ({ ...prevState, status: "Adopted" }));
     });
   };
 
   const handleDelete = () => {
-    unSavePet(pet._id)
+    unSavePet(selectedPet._id)
       .then((res) => {
         const saved = res.data;
         setSavedPets(saved);
-        alert(`${pet.name} was remove from save pets`);
+        alert(`${selectedPet.name} was remove from save pets`);
       })
       .catch((e) => console.log(e));
   };
 
   const handleReturn = () => {
-    returnPet(pet._id)
+    returnPet(selectedPet._id)
       .then((res) => {
         const adopted = res.data;
         setAdoptedPets(adopted);
-        alert(`${pet.name} was returned`);
+        alert(`${selectedPet.name} was returned`);
         setSelectedPet((prevState) => ({ ...prevState, status: "Available" }));
       })
       .catch((e) => console.log(e));
@@ -72,7 +69,9 @@ export default function PetActions({ classes, pet }) {
 
   return (
     <CardActions className={classes.cardActions}>
-      {isPetAdopted ? (
+      {isAdoptedByOtherUser ? (
+        <></>
+      ) : isPetAdopted ? (
         <Button size="small" color="primary" onClick={handleReturn}>
           Return Pet
         </Button>
