@@ -12,7 +12,7 @@ import useStyles from "./styles";
 import SignUp from "./SignUp";
 import { useContext, useState } from "react";
 import { logIn, signUp } from "../../../api";
-import { UserContext } from "../../Context/userContext";
+import { UserContext, checkToken } from "../../Context/userContext";
 
 export default function AuthModal({ handleClose, open }) {
   const { setUid, setRole, isLoading, setIsLoading, setIsAuth } = useContext(UserContext);
@@ -49,7 +49,7 @@ export default function AuthModal({ handleClose, open }) {
           })
           .catch((e) => alert("wrong email or password"))
           .finally(()=>{
-            setIsAuth(true)
+            if (checkToken()) setIsAuth(true)
             setIsLoading(false)
             handleClose()
           })
@@ -65,7 +65,7 @@ export default function AuthModal({ handleClose, open }) {
           })
           .catch((e) => alert(e))
           .finally(()=>{
-            setIsAuth(true)
+            if (checkToken()) setIsAuth(true)
             setIsLoading(false)
             handleClose()
           })
