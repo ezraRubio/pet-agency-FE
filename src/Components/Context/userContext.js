@@ -9,6 +9,17 @@ const isTokenExpired = (decodedToken) => {
   return false 
 };
 
+export const checkToken = () => {
+  const token = localStorage.getItem("loggedUser")
+  if(!token) return null
+  const tokenDecoded = token && jwt_decode(token)
+  if (isTokenExpired(tokenDecoded)) {
+    localStorage.clear()
+    return null
+  }
+  return tokenDecoded
+}
+
 export const UserContext = createContext();
 
 export default function UserContextProvider(props) {
@@ -25,17 +36,13 @@ export default function UserContextProvider(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("loggedUser")
-    if(!token) return setIsAuth(false)
-    const tokenDecoded = token && jwt_decode(token)
-    if (isTokenExpired(tokenDecoded)) {
-      localStorage.clear()
-      return setIsAuth(false)
+    const tokenDecoded = checkToken();
+
+    if (tokenDecoded) {
+      setUid(()=>tokenDecoded.uid)
+      setRole(()=>tokenDecoded.role)
+      setIsAuth(true)
     }
-    
-    setUid(()=>tokenDecoded.uid)
-    setRole(()=>tokenDecoded.role)
-    setIsAuth(true)
   }, []);
 
   useEffect(() => {
